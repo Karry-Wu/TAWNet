@@ -1,2 +1,2 @@
-# TAWNet
-The code will be made publicly available after the paper is published.
+# TAWNet: Three-dimensional Adaptive Weighted Network for RGB-D Salient Object Detection
+
