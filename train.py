@@ -36,7 +36,7 @@ torch.cuda.manual_seed_all(118)
 opt = parser.parse_args()
 print('Generator Learning Rate: {}'.format(opt.lr_gen))
 # build models
-generator = TAWNet('./ckpt/p2t_base.pth')  # 加载backbone预训练模型
+generator = TAWNet('./ckpt/p2t_base.pth')  # load backbone
 generator.cuda()
 
 generator_params = generator.parameters()
@@ -67,13 +67,11 @@ def structure_loss(pred, mask):
     return (wbce + wiou).mean()
 
 def get_loss(side_out1, side_out2, side_out3, side_out4, target1, target2, target3, target4):
-    loss1 = structure_loss(side_out1, target1)  # + CLoss(side_out1, target1)
-    loss2 = structure_loss(side_out2, target2)  # + CLoss(side_out2, target2)
-    loss3 = structure_loss(side_out3, target3)  # + CLoss(side_out3, target3)
-    loss4 = structure_loss(side_out4, target4)  # + CLoss(side_out4, target4)
-    # sml = get_saliency_smoothness(torch.sigmoid(side_out1), mask1)
+    loss1 = structure_loss(side_out1, target1)  
+    loss2 = structure_loss(side_out2, target2)
+    loss3 = structure_loss(side_out3, target3)
+    loss4 = structure_loss(side_out4, target4)
     return loss1, loss2, loss3, loss4
-
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
@@ -99,12 +97,12 @@ for epoch in range(1, opt.epoch + 1):
         gts = gts.cuda()
         depths = depths.cuda()
         b, c, h, w = gts.size()
-        target_1 = F.interpolate(gts, size=h // 8, mode='nearest') # 最近邻插值方法,下采样
+        target_1 = F.interpolate(gts, size=h // 8, mode='nearest') 
         target_2 = F.interpolate(gts, size=h // 16, mode='nearest')
         target_3 = F.interpolate(gts, size=h // 32, mode='nearest')
 
-        with amp.autocast(enabled=use_fp16):  # 混合精度训练 加快训练过程并降低资源消耗
-            depth_3 = torch.cat((depths, depths, depths), 1)  # 深度图复制3通道
+        with amp.autocast(enabled=use_fp16):  
+            depth_3 = torch.cat((depths, depths, depths), 1) 
             # depth_3 = depths  # RGB-T image
             side_out4, side_out3, side_out2, side_out1 = generator(images, depth_3)  # hed
             loss1, loss2, loss3, loss4 = get_loss(side_out1, side_out2, side_out3, side_out4, gts, target_1, target_2, target_3)
@@ -139,23 +137,24 @@ for epoch in range(1, opt.epoch + 1):
                 [images[0].clone().cpu().data, show_gt, show_res], 3,
                 normalize=True)
             sw.add_image('res', grid_image, i)
-    adjust_lr(generator_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch) # 调整学习率，每100个epoch降低10倍
-    if epoch % 10 == 0 or epoch % opt.epoch == 0:  # 每隔10个epoch，验证一下模型
+    adjust_lr(generator_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch) 
+    if epoch % 10 == 0 or epoch % opt.epoch == 0: 
         generator.eval()
         mae, validation_step = validation(generator, opt.trainsize, sw, validation_step)
         print('this validation mae is', mae, 'epoch is', epoch)
         sw.add_scalars('mae', {'mae': mae}, global_step=epoch)
         current_mae_avg = mae
-        if current_mae_avg < min_mae and epoch > 150: # 150个epoch开始，每隔10个epoch，保存模型mae最小的模型
+        if current_mae_avg < min_mae and epoch > 150: 
             min_mae = current_mae_avg
             print('the lower mae and saving models...')
             open(logfile, 'a').write(
                 'The min MAE on validation of epoch {:03d} is {:.4f}\n'.format( epoch, min_mae))
             path = os.path.join(save_path, model_name + '_%d' % epoch + '_best.pth')
             torch.save(generator.state_dict(), path)
-    # 设置断点保存
-    if epoch % 20 == 0 and epoch >= 140:  # 每隔20个epoch，保存模型checkpoint
+   
+    if epoch % 20 == 0 and epoch >= 140:  
         path = os.path.join(save_path, model_name + '_%d' % epoch + '_ckpt.pth')
         torch.save(generator.state_dict(), path)
 
 open(logfile, 'a').write('End Train: ' + str(datetime.now()) + '\n')
+
