@@ -3,7 +3,6 @@ import os
 import sys
 # sys.path.append('../models')
 sys.path.append('..')
-# from models.PATNet import PATNet
 from models.TAWNet import TAWNet
 
 dutrgbd_root_test = '../dataset/RGB-D_test/DUT-RGBD/'   #
