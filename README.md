@@ -7,7 +7,7 @@ Please refer to the `requirements.txt` file for the environment configuration we
 The training and testing datasets for RGBD and RGBT can be downloaded from the following links
 [RGB-D datasets](https://github.com/Xiaoqi-Zhao-DLUT/SSLSOD) .
 
-The validation set is a randomly selected image from the test set
+The validation set is a randomly selected image from the test datasets
 [BaiduYun](https://pan.baidu.com/s/1duss2wT8Iw3Az_plS3wEYQ)[kbs1] .
 
 Your `/dataset` folder should look like this:
