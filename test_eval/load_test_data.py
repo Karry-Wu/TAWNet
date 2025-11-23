@@ -3,7 +3,6 @@ from PIL import Image
 import torch.utils.data as data
 import torchvision.transforms as transforms
 
-
 class test_dataset:
     def __init__(self, image_root, gt_root):
         self.img_list_1 = [os.path.splitext(f)[0] for f in os.listdir(image_root) if
