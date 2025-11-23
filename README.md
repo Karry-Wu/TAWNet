@@ -38,6 +38,7 @@ The saliency map results on six test datasets of our TAWNet.[BaiduYun](https://p
 
 2. Run `python train.py` for training and `python test_eval/test_pred.py` for testing. The trained models will be in `/ckpt` folder. The predictions will be in `test_eval/pred` folder and the training records will be in `results/tensorboard_log/TAWNet_log` folder. 
 
+3. Our TAWNet was trained, tested, and evaluated on a single NVIDIA RTX 4090 GPU with 24GB of memory.
 ## Evaluation
 Run `python test_eval/eval_pred.py` to obtain the evaluation results of a certain experiment.
 We use SOD evaluation tool [PySODEvalToolkit](https://github.com/lartpang/PySODEvalToolkit) to compare our method with other state-of-the-art methods and plot PR curves.
