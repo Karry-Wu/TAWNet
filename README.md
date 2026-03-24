@@ -1,5 +1,5 @@
 # TAWNet: Three-dimensional Adaptive Weighted Network for RGB-D Salient Object Detection
-## Our paper has been accepted by Knowledge-Based Systems.
+
 ## Environment
 Please refer to the `requirements.txt` file for the environment configuration we used.
 
